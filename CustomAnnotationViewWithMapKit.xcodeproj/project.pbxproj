@@ -46,7 +46,6 @@
 		A6F3BD6C17A87D71008E1F79 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		A6F3BD6E17A88129008E1F79 /* MKMapView+ZoomLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKMapView+ZoomLevel.h"; sourceTree = "<group>"; };
 		A6F3BD6F17A88129008E1F79 /* MKMapView+ZoomLevel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKMapView+ZoomLevel.m"; sourceTree = "<group>"; };
-		A6F3BD7117A881F5008E1F79 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		A6F3BD7217A882CA008E1F79 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -105,10 +104,9 @@
 				A6F3BD6517A87D52008E1F79 /* RSMapViewController.m */,
 				A6F3BD6E17A88129008E1F79 /* MKMapView+ZoomLevel.h */,
 				A6F3BD6F17A88129008E1F79 /* MKMapView+ZoomLevel.m */,
-				A6F3BD5017A87D52008E1F79 /* Supporting Files */,
-				A6F3BD7117A881F5008E1F79 /* Constants.h */,
 				A6B8698817A999D6006F167A /* RSLocationManager.h */,
 				A6B8698917A999D6006F167A /* RSLocationManager.m */,
+				A6F3BD5017A87D52008E1F79 /* Supporting Files */,
 			);
 			path = CustomAnnotationViewWithMapKit;
 			sourceTree = "<group>";

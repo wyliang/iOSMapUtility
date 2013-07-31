@@ -13,6 +13,11 @@ typedef  void (^GeoCoderCompletionBlock)(NSString *address, CLLocation *location
 
 @interface MKMapView (MKMapView_ZoomLevel_h)
 
++ (double)longitudeToPixelSpaceX:(double)longitude;
++ (double)latitudeToPixelSpaceY:(double)latitude;
++ (double)pixelSpaceXToLongitude:(double)pixelX;
++ (double)pixelSpaceYToLatitude:(double)pixelY;
+
 - (void)zoomToUserLocation:(CLLocation *)location;
 
 - (void)setCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate
@@ -21,5 +26,7 @@ typedef  void (^GeoCoderCompletionBlock)(NSString *address, CLLocation *location
 
 + (void)geocodeAddressString:(NSString *)address GeoCoderCompletionBlock:(GeoCoderCompletionBlock)block;
 + (void)reverseGeocodeLocation:(CLLocation *)location GeoCoderCompletionBlock:(GeoCoderCompletionBlock)block;
+
+- (NSUInteger) zoomLevel;
 
 @end

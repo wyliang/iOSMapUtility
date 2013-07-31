@@ -28,14 +28,14 @@ static RSLocationManager *manager;
 }
 
 - (void)startLocationTracking {
-	manager = [[CLLocationManager alloc] init];
-    manager.desiredAccuracy = kCLLocationAccuracyBest;
-    manager.delegate = self;
-    [manager startUpdatingLocation];
+	locationManager = [[CLLocationManager alloc] init];
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    locationManager.delegate = self;
+    [locationManager startUpdatingLocation];
 }
 
 - (void)stopLocationTracking {
-	[manager stopUpdatingLocation];
+	[locationManager stopUpdatingLocation];
 }
 
 - (void)locateMeWithBlock:(UserLocationBlock)block {
@@ -53,5 +53,21 @@ static RSLocationManager *manager;
 	}
 	[userLocationBlocks removeAllObjects];
 }
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    if(error.code == kCLErrorDenied) {
+        [locationManager stopUpdatingLocation];
+    } else if(error.code == kCLErrorLocationUnknown) {
+        // retry
+    } else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error retrieving location"
+														message:[error description]
+													   delegate:nil
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil];
+        [alert show];
+    }
+}
+
 
 @end

@@ -3,28 +3,35 @@
 
 #define MERCATOR_OFFSET 268435456
 #define MERCATOR_RADIUS 85445659.44705395
+#define METERS_PER_MILE 1609.344
 
 @implementation MKMapView (ZoomLevel)
 
 #pragma mark -
 #pragma mark Map conversion methods
 
-- (double)longitudeToPixelSpaceX:(double)longitude
++ (double)longitudeToPixelSpaceX:(double)longitude
 {
     return round(MERCATOR_OFFSET + MERCATOR_RADIUS * longitude * M_PI / 180.0);
 }
 
-- (double)latitudeToPixelSpaceY:(double)latitude
++ (double)latitudeToPixelSpaceY:(double)latitude
 {
-    return round(MERCATOR_OFFSET - MERCATOR_RADIUS * logf((1 + sinf(latitude * M_PI / 180.0)) / (1 - sinf(latitude * M_PI / 180.0))) / 2.0);
+	if (latitude == 90.0) {
+		return 0;
+	} else if (latitude == -90.0) {
+		return MERCATOR_OFFSET * 2;
+	} else {
+		return round(MERCATOR_OFFSET - MERCATOR_RADIUS * logf((1 + sinf(latitude * M_PI / 180.0)) / (1 - sinf(latitude * M_PI / 180.0))) / 2.0);
+	}
 }
 
-- (double)pixelSpaceXToLongitude:(double)pixelX
++ (double)pixelSpaceXToLongitude:(double)pixelX
 {
     return ((round(pixelX) - MERCATOR_OFFSET) / MERCATOR_RADIUS) * 180.0 / M_PI;
 }
 
-- (double)pixelSpaceYToLatitude:(double)pixelY
++ (double)pixelSpaceYToLatitude:(double)pixelY
 {
     return (M_PI / 2.0 - 2.0 * atan(exp((round(pixelY) - MERCATOR_OFFSET) / MERCATOR_RADIUS))) * 180.0 / M_PI;
 }
@@ -37,8 +44,8 @@
                                  andZoomLevel:(NSUInteger)zoomLevel
 {
     // convert center coordiate to pixel space
-    double centerPixelX = [self longitudeToPixelSpaceX:centerCoordinate.longitude];
-    double centerPixelY = [self latitudeToPixelSpaceY:centerCoordinate.latitude];
+    double centerPixelX = [MKMapView longitudeToPixelSpaceX:centerCoordinate.longitude];
+    double centerPixelY = [MKMapView latitudeToPixelSpaceY:centerCoordinate.latitude];
     
     // determine the scale value from the zoom level
     NSInteger zoomExponent = 20 - zoomLevel;
@@ -54,13 +61,13 @@
     double topLeftPixelY = centerPixelY - (scaledMapHeight / 2);
     
     // find delta between left and right longitudes
-    CLLocationDegrees minLng = [self pixelSpaceXToLongitude:topLeftPixelX];
-    CLLocationDegrees maxLng = [self pixelSpaceXToLongitude:topLeftPixelX + scaledMapWidth];
+    CLLocationDegrees minLng = [MKMapView pixelSpaceXToLongitude:topLeftPixelX];
+    CLLocationDegrees maxLng = [MKMapView pixelSpaceXToLongitude:topLeftPixelX + scaledMapWidth];
     CLLocationDegrees longitudeDelta = maxLng - minLng;
     
     // find delta between top and bottom latitudes
-    CLLocationDegrees minLat = [self pixelSpaceYToLatitude:topLeftPixelY];
-    CLLocationDegrees maxLat = [self pixelSpaceYToLatitude:topLeftPixelY + scaledMapHeight];
+    CLLocationDegrees minLat = [MKMapView pixelSpaceYToLatitude:topLeftPixelY];
+    CLLocationDegrees maxLat = [MKMapView pixelSpaceYToLatitude:topLeftPixelY + scaledMapHeight];
     CLLocationDegrees latitudeDelta = -1 * (maxLat - minLat);
     
     // create and return the lat/lng span
@@ -85,6 +92,22 @@
     // set the region like normal
     [self setRegion:region animated:animated];
 }
+
+- (NSUInteger) zoomLevel {
+    MKCoordinateRegion region = self.region;
+
+    double centerPixelX = [MKMapView longitudeToPixelSpaceX: region.center.longitude];
+    double topLeftPixelX = [MKMapView longitudeToPixelSpaceX: region.center.longitude - region.span.longitudeDelta / 2];
+    
+    double scaledMapWidth = (centerPixelX - topLeftPixelX) * 2;
+    CGSize mapSizeInPixels = self.bounds.size;
+    double zoomScale = scaledMapWidth / mapSizeInPixels.width;
+    double zoomExponent = log(zoomScale) / log(2);
+    double zoomLevel = 20 - zoomExponent;
+    
+    return zoomLevel;
+}
+
 
 - (void)zoomToUserLocation:(CLLocation *)location {
 	CLLocationCoordinate2D zoomLocation;

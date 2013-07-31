@@ -13,7 +13,7 @@ typedef void (^UserLocationBlock)(CLLocation *location);
 
 @interface RSLocationManager : NSObject <CLLocationManagerDelegate>
 {
-	CLLocationManager *manager;
+	CLLocationManager *locationManager;
 	NSMutableArray *userLocationBlocks;
 }
 + (RSLocationManager *)sharedInstance;
